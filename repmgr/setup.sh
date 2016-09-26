@@ -78,7 +78,8 @@ if [ "$node_id" = "1" ] ; then
     -e "s,^#?(wal_keep_segments) =.*,\1 = 5000," \
     -e "s,^#?(log_timezone) =.*,\1 = 'Asia/Tokyo'," \
     -e "s,^#?(timezone) =.*,\1 = 'Asia/Tokyo'," \
-    -e "s,^#?(restart_after_crash) =.*,\1 = off," $conf
+    -e "s,^#?(restart_after_crash) =.*,\1 = off," \
+    -e "s,^#?(shared_preload_libraries) =.*,\1 = 'repmgr_funcs'," $conf
 
   systemctl restart postgresql-9.5
 fi
@@ -90,12 +91,23 @@ node_name=$my_name
 conninfo='host=$my_name user=repmgr password=$REPMGR_PASSWORD dbname=repmgr'
 pg_bindir=/usr/pgsql-9.5/bin/
 ssh_options=-o "StrictHostKeyChecking no"
+failover=automatic
+promote_command='repmgr standby promote -f /etc/repmgr/9.5/repmgr.conf'
+follow_command='repmgr standby follow -f /etc/repmgr/9.5/repmgr.conf'
+logfile='/var/log/repmgr/repmgr-9.5.log'
+monitor_interval_secs=2
 EOD
+
+cp /vagrant/repmgr.logrotate.conf /etc/logrotate.d/repmgr
 
 if [ "$node_id" = "1" ] ; then
   su -l postgres -c "/usr/pgsql-9.5/bin/repmgr -f /etc/repmgr/9.5/repmgr.conf master register"
+  systemctl start repmgr95
+  systemctl enable repmgr95
 elif [ "$node_id" = "2" ] ; then
   su -l postgres -c "/usr/pgsql-9.5/bin/repmgr -f /etc/repmgr/9.5/repmgr.conf -h $peer_name -U repmgr -d repmgr -D $PGDATA standby clone"
   systemctl restart postgresql-9.5
   su -l postgres -c "/usr/pgsql-9.5/bin/repmgr -f /etc/repmgr/9.5/repmgr.conf standby register"
+  systemctl start repmgr95
+  systemctl enable repmgr95
 fi
