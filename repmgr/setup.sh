@@ -95,6 +95,6 @@ if [ "$node_id" = "1" ] ; then
   su -l postgres -c "/usr/pgsql-9.5/bin/repmgr -f /etc/repmgr/9.5/repmgr.conf master register"
 elif [ "$node_id" = "2" ] ; then
   su -l postgres -c "/usr/pgsql-9.5/bin/repmgr -f /etc/repmgr/9.5/repmgr.conf -h $peer_name -U repmgr -d repmgr -D $PGDATA standby clone"
-  su -l postgres -c "/usr/pgsql-9.5/bin/repmgr -f /etc/repmgr/9.5/repmgr.conf standby register"
   systemctl restart postgresql-9.5
+  su -l postgres -c "/usr/pgsql-9.5/bin/repmgr -f /etc/repmgr/9.5/repmgr.conf standby register"
 fi
