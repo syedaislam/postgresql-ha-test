@@ -68,16 +68,17 @@ if [ "$node_id" = "1" ] ; then
     /vagrant/pg_hba.conf > $PGDATA/pg_hba.conf
 
   conf=$PGDATA/postgresql.conf
-  sed -i -re "s/^#?(listen_addresses) =.*/\1 = '*'/" $conf
-  sed -i -re "s/^#?(max_wal_senders) =.*/\1 = 10/" $conf
-  sed -i -re "s/^#?(wal_level) =.*/\1 = hot_standby/" $conf
-  sed -i -re "s/^#?(hot_standby) =.*/\1 = on/" $conf
-  sed -i -re "s/^#?(archive_mode) =.*/\1 = on/" $conf
-  sed -i -re "s,^#?(archive_command) =.*,\1 = '/bin/true'," $conf
-  sed -i -re "s,^#?(wal_keep_segments) =.*,\1 = 5000," $conf
-  sed -i -re "s,^#?(log_timezone) =.*,\1 = 'Asia/Tokyo'," $conf
-  sed -i -re "s,^#?(timezone) =.*,\1 = 'Asia/Tokyo'," $conf
-  sed -i -re "s,^#?(restart_after_crash) =.*,\1 = off," $conf
+  sed -i -r \
+    -e "s/^#?(listen_addresses) =.*/\1 = '*'/" \
+    -e "s/^#?(max_wal_senders) =.*/\1 = 10/" \
+    -e "s/^#?(wal_level) =.*/\1 = hot_standby/" \
+    -e "s/^#?(hot_standby) =.*/\1 = on/" \
+    -e "s/^#?(archive_mode) =.*/\1 = on/" \
+    -e "s,^#?(archive_command) =.*,\1 = '/bin/true'," \
+    -e "s,^#?(wal_keep_segments) =.*,\1 = 5000," \
+    -e "s,^#?(log_timezone) =.*,\1 = 'Asia/Tokyo'," \
+    -e "s,^#?(timezone) =.*,\1 = 'Asia/Tokyo'," \
+    -e "s,^#?(restart_after_crash) =.*,\1 = off," $conf
 
   systemctl restart postgresql-9.5
 fi
