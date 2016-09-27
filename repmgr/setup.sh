@@ -108,6 +108,7 @@ elif [ "$node_id" = "2" ] ; then
   su -l postgres -c "/usr/pgsql-9.5/bin/repmgr -f /etc/repmgr/9.5/repmgr.conf -h $peer_name -U repmgr -d repmgr -D $PGDATA standby clone"
   systemctl restart postgresql-9.5
   su -l postgres -c "/usr/pgsql-9.5/bin/repmgr -f /etc/repmgr/9.5/repmgr.conf standby register"
+  sleep 5
   systemctl start repmgr95
   systemctl enable repmgr95
 fi
